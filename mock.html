@@ -1,0 +1,90 @@
+<html>
+<body>
+
+	Book ID<input type="text" id="id" placeholder="Bookid"><span id="msg">message</span><br>
+	<br>Book name<input type="text" id="name" placeholder="Bookname"><br><br>
+	Price<input type="text" id="price" placeholder="Price"><br><br>
+
+
+<button id="b2"> Add a Book</button><br><span id="show">show all books here</span>
+
+
+</body>
+
+<script src="jquery-3.5.1.min.js"></script>
+<script>//our scrip will come here 
+
+
+
+$(document).ready(function()
+{
+console.log("Domcontent loaded working");
+$("#b2").click(function () 
+	{ 
+		let input={id:$('#id').val()}
+		console.log("input is:" +input);
+
+       
+		let parametertothefunction={
+			data: {x:input},
+			type: 'get',
+            datatype: "json",
+            url: "http://localhost:8082/adddetails",
+			
+                    success:  (datafromserver)=> {
+							console.log("data fetching succeded"+datafromserver);
+							if(datafromserver.status==true){
+								$('#msg').text("Book is present");
+								$('#name').val(datafromserver.adddetails.bookname);
+								$('#price').val(datafromserver.adddetails.price);
+
+							}
+							else{
+								$('#msg').text("Book is  not present");
+								$('#name').val("");
+								$('#price').val("");
+
+							}
+					},
+                    error:(datafromserver)=>{
+						console.log("error in server"+datafromserver);
+                    }
+                };
+
+				$.ajax(parametertothefunction);
+				showAllBooks();
+	});
+	showAllBooks();
+	function showAllBooks(){
+			let dbparams={
+				data:{},
+				url:'http://localhost:8082/ShowAllBooks',
+				type:'get',
+				dataType:'json',
+				success:(serverResponse)=>{
+					console.log("success serverResponse");
+					console.log(serverResponse);
+
+					let bookList=" ";
+					for(let i=0; i<serverResponse.length;i++){
+						bookList += "<br/>"+serverResponse[i].bookid+" "+serverResponse[i].bookname+" "
+						+serverResponse[i].price;
+					}
+
+					$('#show').html(bookList);
+				},
+				error:(serverResponse)=>{
+
+}
+};
+
+$.ajax(dbparams);
+}
+	
+});
+
+
+</script>
+
+
+</html>
